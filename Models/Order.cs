@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BangazonAPI.Models
+namespace Bangazon.Models
 {
     public class Order
     {
