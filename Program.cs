@@ -33,5 +33,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapGet("/bangazon/categories", (BangazonDbContext db) =>
+{
+    return db.Categories.ToList();
+});
+
 app.Run();
 
