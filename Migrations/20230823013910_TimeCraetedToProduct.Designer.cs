@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Bangazon.Migrations
 {
     [DbContext(typeof(BangazonDbContext))]
-    partial class BangazonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230823013910_TimeCraetedToProduct")]
+    partial class TimeCraetedToProduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,10 +70,6 @@ namespace Bangazon.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("PaymentTypeId");
-
                     b.ToTable("Orders");
 
                     b.HasData(
@@ -81,7 +79,7 @@ namespace Bangazon.Migrations
                             CustomerId = "123",
                             IsOpen = true,
                             PaymentTypeId = 1,
-                            TimeSubmitted = new DateTime(2023, 8, 26, 11, 34, 14, 690, DateTimeKind.Local).AddTicks(7704)
+                            TimeSubmitted = new DateTime(2023, 8, 22, 21, 39, 10, 225, DateTimeKind.Local).AddTicks(9849)
                         });
                 });
 
@@ -103,10 +101,6 @@ namespace Bangazon.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("OrderProducts");
 
@@ -163,9 +157,6 @@ namespace Bangazon.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Price")
                         .HasColumnType("integer");
 
@@ -181,12 +172,6 @@ namespace Bangazon.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("SellerId");
-
                     b.ToTable("Products");
 
                     b.HasData(
@@ -199,7 +184,7 @@ namespace Bangazon.Migrations
                             Price = 12,
                             Quantity = 1,
                             SellerId = "123",
-                            TimeCreated = new DateTime(2023, 8, 26, 11, 34, 14, 690, DateTimeKind.Local).AddTicks(7842)
+                            TimeCreated = new DateTime(2023, 8, 22, 21, 39, 10, 225, DateTimeKind.Local).AddTicks(9958)
                         });
                 });
 
@@ -231,77 +216,6 @@ namespace Bangazon.Migrations
                             IsSeller = true,
                             Name = "John"
                         });
-                });
-
-            modelBuilder.Entity("Bangazon.Models.Order", b =>
-                {
-                    b.HasOne("Bangazon.Models.User", "User")
-                        .WithMany("Orders")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Bangazon.Models.PaymentType", "PaymentType")
-                        .WithMany()
-                        .HasForeignKey("PaymentTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PaymentType");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Bangazon.Models.OrderProduct", b =>
-                {
-                    b.HasOne("Bangazon.Models.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Bangazon.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Bangazon.Models.Product", b =>
-                {
-                    b.HasOne("Bangazon.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Bangazon.Models.Order", null)
-                        .WithMany("Products")
-                        .HasForeignKey("OrderId");
-
-                    b.HasOne("Bangazon.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Bangazon.Models.Order", b =>
-                {
-                    b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("Bangazon.Models.User", b =>
-                {
-                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }
