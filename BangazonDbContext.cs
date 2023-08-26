@@ -15,6 +15,11 @@ public class BangazonDbContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Order>()
+            .HasMany(e => e.Products)
+            .WithMany(e => e.Orders)
+            .UsingEntity<OrderProduct>();
+
         modelBuilder.Entity<Category>().HasData(new Category[]
         {
             new Category {Id = 1, Name = "Animal"}
@@ -23,17 +28,13 @@ public class BangazonDbContext : DbContext
         {
             new Order {Id = 1, CustomerId = "123", IsOpen = true, PaymentTypeId = 1, TimeSubmitted = DateTime.Now}
         });
-        modelBuilder.Entity<OrderProduct>().HasData(new OrderProduct[]
-        {
-            new OrderProduct {Id = 1, OrderId = 1, ProductId = 1, Quantity = 1}
-        });
         modelBuilder.Entity<PaymentType>().HasData(new PaymentType[]
         {
             new PaymentType {Id = 1, Type = "Card"}
         });
         modelBuilder.Entity<Product>().HasData(new Product[]
         {
-            new Product {Id = 1, SellerId = "123", Name = "Dog", Description = "A new dog", Price = 12, Quantity = 1, CategoryId = 1}
+            new Product {Id = 1, SellerId = "123", Name = "Dog", Description = "A new dog", Price = 12, Quantity = 1, CategoryId = 1, TimeCreated = DateTime.Now}
         });
         modelBuilder.Entity<User>().HasData(new User[]
         {
