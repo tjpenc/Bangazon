@@ -189,5 +189,42 @@ app.MapGet("/api/order/sellers/{id}", (BangazonDbContext db, int id) =>
     return Results.Ok(order);
 });
 
+// Users API Calls
+
+app.MapGet("/api/users/{id}", (BangazonDbContext db, string id) =>
+{
+    User user = db.Users.FirstOrDefault(u => u.Id == id);
+    if (user == null)
+    {
+        return Results.NotFound("User not found");
+    }
+
+    return Results.Ok(user);
+});
+
+app.MapGet("/api/users/orders/{id}", (BangazonDbContext db, int id) =>
+{
+    Order order = db.Orders.FirstOrDefault(o => o.Id == id);
+    User user = db.Users.FirstOrDefault(u => u.Id == order.CustomerId);
+    if (user == null)
+    {
+        return Results.NotFound("User not found");
+    }
+
+    return Results.Ok(user);
+});
+
+app.MapGet("/api/users/products/{id}", (BangazonDbContext db, int id) =>
+{
+    Product product = db.Products.FirstOrDefault(p => p.Id == id);
+    User user = db.Users.FirstOrDefault(u => u.Id == product.SellerId);
+    if (user == null)
+    {
+        return Results.NotFound("User not found");
+    }
+
+    return Results.Ok(user);
+});
+
 app.Run();
 
