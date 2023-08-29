@@ -34,7 +34,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// All Api Calls for products
+// Products API Calls
 app.MapGet("/api/products", (BangazonDbContext db) =>
 {
     if (db.Products == null)
@@ -126,10 +126,68 @@ app.MapPut("/api/products/{id}", (BangazonDbContext db, int id, Product product)
     return Results.Ok(productToUpdate);
 });
 
-app.MapGet("/api/orders", (BangazonDbContext db) =>
+// Customer Orders API Calls
+
+app.MapGet("/api/customer/{id}/closedorders", (BangazonDbContext db, string id) =>
 {
-    return db.Orders
-        .Include(o => o.Products);
+    List<Order> orders = db.Orders.Where(o => o.CustomerId == id && o.IsOpen == false).ToList();
+    if (orders.Count > 0)
+    {
+        return Results.Ok(orders);
+    }
+    else
+    {
+        return Results.NotFound("There are no closed orders for this user");
+    }
 });
+
+app.MapGet("/api/customer/{id}/openorders", (BangazonDbContext db, string id) =>
+{
+    List<Order> cart = db.Orders.Where(o => o.IsOpen == true && o.CustomerId == id)
+        .Include(o => o.Products)
+        .ToList();
+
+    if (cart.Count > 0)
+    {
+        return Results.Ok(cart);
+    }
+    else
+    {
+        return Results.NotFound("There is no open order");
+    }
+});
+
+app.MapGet("/api/orders/{id}", (BangazonDbContext db, int id) =>
+{
+    List<Order> order = db.Orders.Where(o => o.Id == id).ToList();
+    if (order == null)
+    {
+        return Results.NotFound("There is no open order");
+
+    }
+    return Results.Ok(db.Orders
+        .Include(o => o.Products));
+});
+
+app.MapGet("/api/order/history/seller/{id}", (BangazonDbContext db, string id) =>
+{
+    List<Product> products = db.Products
+        .Include(p => p.Orders)
+        .Where(p => p.SellerId == id).ToList();
+
+    return products;
+});
+
+app.MapGet("/api/order/sellers/{id}", (BangazonDbContext db, int id) =>
+{
+    Order order = db.Orders.Include(o => o.User).FirstOrDefault(o => o.Id == id);
+    if (order == null)
+    {
+        Results.NotFound("Order not found");
+    }
+
+    return Results.Ok(order);
+});
+
 app.Run();
 
