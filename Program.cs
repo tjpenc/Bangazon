@@ -102,7 +102,7 @@ app.MapPost("/api/products", (BangazonDbContext db, Product product) =>
         product.TimeCreated = DateTime.Now;
         db.Products.Add(product);
         db.SaveChanges();
-        return Results.Created($"/api/campsites/{product.Id}", product);
+        return Results.Created($"/api/products/{product.Id}", product);
     }
     catch (DbUpdateException)
     {
@@ -183,7 +183,7 @@ app.MapGet("/api/order/sellers/{id}", (BangazonDbContext db, int id) =>
     Order order = db.Orders.Include(o => o.User).FirstOrDefault(o => o.Id == id);
     if (order == null)
     {
-        Results.NotFound("Order not found");
+        return Results.NotFound("Order not found");
     }
 
     return Results.Ok(order);
@@ -224,6 +224,33 @@ app.MapGet("/api/users/products/{id}", (BangazonDbContext db, int id) =>
     }
 
     return Results.Ok(user);
+});
+
+// POST an OrderProduct
+app.MapPost("/api/order_products", (BangazonDbContext db, OrderProduct orderProduct) =>
+{
+    try
+    {
+        db.OrderProducts.Add(orderProduct);
+        db.SaveChanges();
+        return Results.Created($"/api/order_products/{orderProduct.Id}", orderProduct);
+    }
+    catch (DbUpdateException)
+    {
+        return Results.BadRequest("Please enter valid data");
+    }
+});
+
+app.MapDelete("/api/order_products/{id}", (BangazonDbContext db, int id) =>
+{
+    OrderProduct orderProduct = db.OrderProducts.FirstOrDefault(op => op.Id == id);
+    if (orderProduct == null)
+    {
+        return Results.NotFound("Cannot remove item from cart");
+    }
+    db.OrderProducts.Remove(orderProduct);
+    db.SaveChanges();
+    return Results.Ok("Removed item from cart");
 });
 
 app.Run();
