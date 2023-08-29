@@ -6,6 +6,7 @@ namespace Bangazon.Models
     {
         public string Id { get; set; }
         [Required]
+        public string UID { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public bool IsSeller { get; set; }

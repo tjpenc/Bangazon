@@ -202,6 +202,24 @@ app.MapGet("/api/order/sellers/{id}", (BangazonDbContext db, int id) =>
     return Results.Ok(order);
 });
 
+app.MapPost("/api/orders", (BangazonDbContext db, Order order) =>
+{
+    try
+    {
+        order.TimeSubmitted = DateTime.Now;
+        order.IsOpen = false;
+        db.Orders.Add(order);
+        db.SaveChanges();
+        return Results.Created($"/api/products/{order.Id}", order);
+    }
+    catch (DbUpdateException)
+    {
+        return Results.BadRequest("Please enter valid data");
+    }
+
+
+});
+
 // Users API Calls
 
 app.MapGet("/api/users/{id}", (BangazonDbContext db, string id) =>

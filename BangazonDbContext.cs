@@ -53,10 +53,10 @@ public class BangazonDbContext : DbContext
         });
         modelBuilder.Entity<User>().HasData(new User[]
         {
-            new User {Id = "123", Name = "Amogus", Email = "amogus@email.com", IsSeller = true},
-            new User {Id = "2", Name = "Hammy", Email = "hammy@email.com", IsSeller = true},
-            new User {Id = "3", Name = "Sandra", Email = "sandra@email.com", IsSeller = true},
-            new User {Id = "4", Name = "Crystal", Email = "crystal@email.com", IsSeller = false}
+            new User {Id = "123", UID = "uid1", Name = "Amogus", Email = "amogus@email.com", IsSeller = true},
+            new User {Id = "2", UID = "uid2", Name = "Hammy", Email = "hammy@email.com", IsSeller = true},
+            new User {Id = "3", UID = "uid3", Name = "Sandra", Email = "sandra@email.com", IsSeller = true},
+            new User {Id = "4", UID = "uid4", Name = "Crystal", Email = "crystal@email.com", IsSeller = false}
         });
     }
 }
