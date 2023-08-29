@@ -126,6 +126,19 @@ app.MapPut("/api/products/{id}", (BangazonDbContext db, int id, Product product)
     return Results.Ok(productToUpdate);
 });
 
+app.MapGet("/api/products/categories/{id}", (BangazonDbContext db, int id) =>
+{
+    List<Product> products = db.Products.Where(p => p.CategoryId == id).ToList();
+    if (products.Count > 0)
+    {
+        return Results.Ok(products);
+    }
+    else
+    {
+        return Results.NotFound("No products are found in this category");
+    }
+});
+
 // Customer Orders API Calls
 
 app.MapGet("/api/customer/{id}/closedorders", (BangazonDbContext db, string id) =>
@@ -251,6 +264,42 @@ app.MapDelete("/api/order_products/{id}", (BangazonDbContext db, int id) =>
     db.OrderProducts.Remove(orderProduct);
     db.SaveChanges();
     return Results.Ok("Removed item from cart");
+});
+
+// Category API Calls
+
+app.MapGet("/api/categories", (BangazonDbContext db) =>
+{
+    return db.Categories;
+});
+
+app.MapGet("/api/categories/{id}", (BangazonDbContext db, int id) =>
+{
+    Category category = db.Categories.FirstOrDefault(c => c.Id == id);
+    if (category == null)
+    {
+        return Results.NotFound("Category not found");
+    }
+    return Results.Ok(category);
+});
+
+app.MapPost("/api/categories", (BangazonDbContext db, Category category) =>
+{
+    db.Categories.Add(category);
+    db.SaveChanges();
+    return Results.NoContent();
+});
+
+app.MapDelete("/api/categories/{id}", (BangazonDbContext db) =>
+{
+    Category category = db.Categories.FirstOrDefault(c => c.Id == id);
+    if (category == null)
+    {
+        return Results.NotFound("Category not found");
+    }
+    db.Categories.Remove(category);
+    db.SaveChanges();
+    return Results.NoContent();
 });
 
 app.Run();
