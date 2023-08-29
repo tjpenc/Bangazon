@@ -207,7 +207,7 @@ app.MapPost("/api/orders", (BangazonDbContext db, Order order) =>
     try
     {
         order.TimeSubmitted = DateTime.Now;
-        order.IsOpen = false;
+        order.IsOpen = true;
         db.Orders.Add(order);
         db.SaveChanges();
         return Results.Created($"/api/products/{order.Id}", order);
@@ -216,8 +216,20 @@ app.MapPost("/api/orders", (BangazonDbContext db, Order order) =>
     {
         return Results.BadRequest("Please enter valid data");
     }
+});
 
+app.MapPut("/api/orders/{id}", (BangazonDbContext db, int id) =>
+{
+    Order order = db.Orders.FirstOrDefault(o => o.Id == id);
+    if (order == null)
+    {
+        Results.NotFound("No product was found");
+    }
 
+    order.TimeSubmitted = DateTime.Now;
+    order.IsOpen = false;
+    db.SaveChanges();
+    return Results.Ok(order);
 });
 
 // Users API Calls
