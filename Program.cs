@@ -290,7 +290,7 @@ app.MapPost("/api/categories", (BangazonDbContext db, Category category) =>
     return Results.NoContent();
 });
 
-app.MapDelete("/api/categories/{id}", (BangazonDbContext db) =>
+app.MapDelete("/api/categories/{id}", (BangazonDbContext db, int id) =>
 {
     Category category = db.Categories.FirstOrDefault(c => c.Id == id);
     if (category == null)
