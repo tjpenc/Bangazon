@@ -23,7 +23,21 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000",
+                                "http://localhost:7268")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
+
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -33,6 +47,34 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Check for user
+app.MapGet("/api/users/check/{uid}", (BangazonDbContext db, string uid) =>
+{
+    User user = db.Users.FirstOrDefault(u => u.UID == uid);
+    if (user == null)
+    {
+        return Results.NotFound(null);
+    }
+    return Results.Ok(user);
+});
+
+app.MapPost("/api/users", (BangazonDbContext db, User user) =>
+{
+    db.Users.Add(user);
+    db.SaveChanges();
+    return Results.Ok(user);
+});
+
+app.MapGet("/api/sellers", (BangazonDbContext db) =>
+{
+    List<User> users = db.Users.Where(u => u.IsSeller == true).ToList();
+    if (users.Count == 0)
+    {
+        return Results.NotFound(null);
+    }
+    return Results.Ok(users);
+});
 
 // Products API Calls
 app.MapGet("/api/products", (BangazonDbContext db) =>
@@ -72,7 +114,9 @@ app.MapGet("api/products/{id}", (BangazonDbContext db, int id) =>
 
 app.MapGet("/api/products/seller/{sellerId}", (BangazonDbContext db, string sellerId) =>
 {
-    List<Product> products = db.Products.Where(p => p.SellerId == sellerId).ToList();
+    List<Product> products = db.Products.Where(p => p.SellerId == sellerId)
+    .Include(p => p.Category)
+    .ToList();
     if (products.Count > 0)
     {
         return Results.Ok(products);
